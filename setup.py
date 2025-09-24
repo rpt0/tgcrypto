@@ -21,6 +21,25 @@ from setuptools import setup, Extension, find_packages
 with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 
+compile_flags = [
+    "-O3",
+    "-flto", 
+    "-ffat-lto-objects",
+    "-fno-semantic-interposition",
+    "-march=native",
+    "-mtune=native",
+    "-DNDEBUG"
+]
+
+link_flags = [
+    "-flto",
+    "-ffat-lto-objects",
+    "-fno-semantic-interposition", 
+    "-O3",
+    "-Wl,--gc-sections",
+    "-Wl,--as-needed"
+]
+
 setup(
     name="TgCrypto",
     version="1.2.5",
@@ -40,11 +59,11 @@ setup(
         "Programming Language :: C",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: Implementation",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
@@ -63,7 +82,7 @@ setup(
         "Source": "https://github.com/pyrogram/tgcrypto",
         "Documentation": "https://docs.pyrogram.org",
     },
-    python_requires="~=3.7",
+    python_requires="~=3.9",
     packages=find_packages(),
     test_suite="tests",
     zip_safe=False,
@@ -77,6 +96,8 @@ setup(
                 "tgcrypto/ctr256.c",
                 "tgcrypto/cbc256.c"
             ]
+            extra_compile_args=compile_flags,
+            extra_link_args=link_flags
         )
     ]
 )

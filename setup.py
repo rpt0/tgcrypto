@@ -95,7 +95,7 @@ setup(
                 "tgcrypto/ige256.c",
                 "tgcrypto/ctr256.c",
                 "tgcrypto/cbc256.c"
-            ]
+            ],
             extra_compile_args=compile_flags,
             extra_link_args=link_flags
         )

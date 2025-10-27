@@ -16,28 +16,89 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from setuptools import setup, Extension, find_packages
 
 with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 
+# Force Clang compiler
+os.environ["CC"] = "clang"
+os.environ["CXX"] = "clang++"
+os.environ["LD"] = "clang"
+
+# Extreme optimization flags for Clang targeting your specific CPU
 compile_flags = [
+    # Aggressive optimization levels
     "-O3",
-    "-flto", 
-    "-ffat-lto-objects",
-    "-fno-semantic-interposition",
+    "-fstrict-aliasing",
+    "-funroll-loops",
+    "-finline-functions",
+    
+    # Advanced LTO and inlining
+    "-flto",
+    "-fwhole-program-vtables",
+    "-fvisibility=hidden",
+    "-fvisibility-inlines-hidden",
+    
+    # CPU-specific optimization - use native for auto-detection
     "-march=native",
     "-mtune=native",
-    "-DNDEBUG"
+    
+    # Explicitly enable crypto-relevant instructions
+    "-maes",           # AES-NI instructions (critical for crypto!)
+    "-mpclmulqdq",     # PCLMULQDQ for GCM mode
+    "-mavx2",          # AVX2 for SIMD
+    "-mbmi2",          # Bit manipulation
+    "-mrdseed",        # Random seed instruction
+    "-madx",           # Multi-precision arithmetic
+    
+    # Loop and vector optimization
+    "-floop-unroll-and-jam",
+    "-fvectorize",
+    "-fslp-vectorize-aggressive",
+    "-fno-math-errno",
+    "-freroll-loops",
+    
+    # Security and performance
+    "-DNDEBUG",
+    "-fstack-protector-strong",
+    "-fomit-frame-pointer",
+    
+    # LLVM-specific optimizations for crypto workloads
+    "-mllvm", "-enable-loop-distribute",
+    "-mllvm", "-enable-loop-flatten",
+    "-mllvm", "-enable-interleaved-mem-accesses",
+    "-mllvm", "-aggressive-loop-unswitch",
+    "-mllvm", "-vectorize-memory-aggressively",
+    "-mllvm", "-unroll-threshold=1000",  # More aggressive unrolling
+    "-mllvm", "-inline-threshold=1000",   # More aggressive inlining
+    
+    # Additional crypto-specific optimizations
+    "-mllvm", "-enable-load-pre",
+    "-mllvm", "-enable-gvn-memdep",
 ]
 
 link_flags = [
+    # LTO and optimization
     "-flto",
-    "-ffat-lto-objects",
-    "-fno-semantic-interposition", 
     "-O3",
+    
+    # CPU-specific
+    "-march=native",
+    
+    # Linker optimization
     "-Wl,--gc-sections",
-    "-Wl,--as-needed"
+    "-Wl,--as-needed",
+    "-Wl,--icf=all",
+    "-Wl,-O3",
+    "-Wl,--lto-O3",
+    
+    # Strip unnecessary symbols
+    "-Wl,--strip-all",
+    
+    # Additional linker optimizations
+    "-Wl,--build-id=none",  # Skip build ID for smaller size
 ]
 
 setup(

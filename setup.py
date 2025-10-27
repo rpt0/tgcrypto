@@ -31,6 +31,7 @@ os.environ["LD"] = "clang"
 compile_flags = [
     # Aggressive optimization levels
     "-O3",
+    "-ffast-math",
     "-fstrict-aliasing",
     "-funroll-loops",
     "-finline-functions",
@@ -65,16 +66,9 @@ compile_flags = [
     
     # LLVM-specific optimizations for crypto workloads
     "-mllvm", "-enable-loop-distribute",
-    "-mllvm", "-enable-loop-flatten",
     "-mllvm", "-enable-interleaved-mem-accesses",
-    "-mllvm", "-aggressive-loop-unswitch",
-    "-mllvm", "-vectorize-memory-aggressively",
     "-mllvm", "-unroll-threshold=1000",  # More aggressive unrolling
     "-mllvm", "-inline-threshold=1000",   # More aggressive inlining
-    
-    # Additional crypto-specific optimizations
-    "-mllvm", "-enable-load-pre",
-    "-mllvm", "-enable-gvn-memdep",
 ]
 
 link_flags = [

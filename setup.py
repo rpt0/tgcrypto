@@ -35,8 +35,8 @@ compile_flags = [
     "-funroll-loops",
     "-finline-functions",
     
-    # Advanced LTO and inlining
-    "-flto",
+    # Advanced LTO and inlining (Full LTO for maximum optimization)
+    "-flto",  # Full LTO - small project, worth the compile time
     "-fwhole-program-vtables",
     "-fvisibility=hidden",
     "-fvisibility-inlines-hidden",
@@ -47,18 +47,16 @@ compile_flags = [
     
     # Explicitly enable crypto-relevant instructions
     "-maes",           # AES-NI instructions (critical for crypto!)
-    "-mpclmulqdq",     # PCLMULQDQ for GCM mode
+    "-mvpclmulqdq",    # PCLMULQDQ for GCM mode (note: 'v' prefix!)
     "-mavx2",          # AVX2 for SIMD
     "-mbmi2",          # Bit manipulation
     "-mrdseed",        # Random seed instruction
     "-madx",           # Multi-precision arithmetic
     
     # Loop and vector optimization
-    "-floop-unroll-and-jam",
     "-fvectorize",
-    "-fslp-vectorize-aggressive",
+    "-fslp-vectorize",
     "-fno-math-errno",
-    "-freroll-loops",
     
     # Security and performance
     "-DNDEBUG",
@@ -80,7 +78,7 @@ compile_flags = [
 ]
 
 link_flags = [
-    # LTO and optimization
+    # LTO and optimization (Full LTO)
     "-flto",
     "-O3",
     
